@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vexhound"
+dynamic = ["version"]
+description = "Architecture-neutral firmware memory-safety analysis over VEX IR"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Ravshan Rikhsiev", email = "roppy9751@gmail.com" }]
+keywords = ["firmware", "security", "angr", "vex-ir", "reverse-engineering", "buffer-overflow"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Topic :: Security",
+]
+dependencies = [
+    "angr>=9.2",
+    "networkx>=2.6",
+    "pyelftools>=0.29",
+]
+
+[project.optional-dependencies]
+# The Qiling emulation engine is heavy and only needed for `vexhound emulate --engine qiling`.
+emulation = ["qiling>=1.4"]
+# The LLM harness (`vexhound hunt-llm`) is optional; without it the verifiers still run
+# offline and the harness degrades to a MockBackend.
+llm = ["anthropic>=0.40"]
+dev = ["pytest>=7", "ruff>=0.1"]
+
+[project.urls]
+Homepage = "https://github.com/arzedlab/vexhound"
+Issues = "https://github.com/arzedlab/vexhound/issues"
+
+[project.scripts]
+vexhound = "vexhound.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = { attr = "vexhound.__version__" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+# This is a binary-analysis tool: it deliberately wraps angr/pyvex calls in broad
+# try/except so a single malformed function cannot abort a whole-firmware scan, and
+# it inspects subprocess return codes by hand. Those idioms are intentional, so the
+# matching lints are disabled rather than worked around.
+ignore = [
+    "BLE001",  # blind `except Exception` is the deliberate per-function guard
+    "S110",    # try/except/pass: skip a function pyvex cannot lift
+    "S112",    # try/except/continue: same, inside a loop
+    "PLW1510", # subprocess return codes are checked explicitly, not via check=
+    "SIM115",  # a few handles are held open for the process lifetime by design
+    "B023",    # closures are built and consumed within one loop iteration
+]

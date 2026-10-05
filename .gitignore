@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Local sample binaries and extracted firmware (large; not distributed).
+# See samples/README.md for how to obtain or rebuild them.
+samples/*
+!samples/README.md
+*.bin
+*.squashfs
+
+# Firmware archives
+*.zip
+
+# Analysis outputs
+*.log
+overflow_hunt_*.json
+overflow_hunt_*.csv
+cand.json
+cand.csv
+/*.json
+/*.csv
+
+# Editors / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Local agent / tooling state
+.claude/
+.playwright-mcp/
+
+# angr analysis cache (LMDB knowledge base)
+*_angr_rtdb/
+*.rtdb
+*.mdb
+
+# Presentations and generated HTML reports (not part of the source tree)
+*.pdf
+report-preview.html
+project-documentation.html
